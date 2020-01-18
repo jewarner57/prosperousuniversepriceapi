@@ -18,32 +18,16 @@ const keys = require('./keys/keys.json');
   await page.waitFor(5000);
 
   await page.click(
-    '#container > div > div > div > div.Frame__body___2ejRPw9 > div.Head__container___38SXSDG > div:nth-child(1) > div > div:nth-child(3)'
-  );
-  await page.type(
-    '#container > div > div > div > div:nth-child(3) > div > div > div.Window__body___2JyiKBP > div.Tile__tile___38KoLVk > div > div.TileFrame__body___3OLRB4K.fonts__font-regular___w47oqm8.type__type-regular___1Ad5n0D > div > div > div.ScrollView__view___2OqtkYJ > form > div:nth-child(1) > div > div > input[type=text]',
-    'tempscreen',
-    { delay: 100 }
-  );
-  await page.click(
-    '#container > div > div > div > div:nth-child(3) > div > div > div.Window__body___2JyiKBP > div.Tile__tile___38KoLVk > div > div.TileFrame__body___3OLRB4K.fonts__font-regular___w47oqm8.type__type-regular___1Ad5n0D > div > div > div.ScrollView__view___2OqtkYJ > form > div.CreateScreenPanel__cmd___2L_M4ex.forms__cmd___cTmW9FA.forms__form-component___1xvnhnq > div > button'
-  );
-
-  await page.click(
-    '#container > div > div > div > div:nth-child(3) > div > div > div.Window__header___3ILqHbd > div.Window__buttons___3glqWWr > span.Window__destroy___1eJDYdK.Window__button___2Gs4t7i.fonts__font-regular___w47oqm8.type__type-larger___1B4nvAe'
+    '#container > div > div > div > div.Frame__body___2ejRPw9 > div.Frame__foot___28jbfLO > div:nth-child(1) > div'
   );
 
   await page.type(
-    '#container > div > div > div > div.Frame__body___2ejRPw9 > div.Frame__main___2HIFLfN > div > div > div > div > div.Tile__selector___3iXBf3h > form > div > input',
-    'CXL',
+    '#container > div > div > div > div:nth-child(3) > div > div > div.Window__body___2JyiKBP > div.Tile__tile___38KoLVk > div.Tile__selector___3iXBf3h > form > div > input',
+    'CX IC1',
     { delay: 100 }
   );
 
   await page.keyboard.press('Enter');
-
-  await page.click(
-    '#container > div > div > div > div.Frame__body___2ejRPw9 > div.Frame__main___2HIFLfN > div > div > div > div > div > div.TileFrame__body___3OLRB4K.fonts__font-regular___w47oqm8.type__type-regular___1Ad5n0D > div > div > div.ScrollView__view___2OqtkYJ > div > table > tbody > tr:nth-child(1) > td:nth-child(1) > span'
-  );
 
   await page.click(
     '#container > div > div > div > div:nth-child(3) > div > div > div.Window__body___2JyiKBP > div.Tile__tile___38KoLVk > div > div.TileFrame__body___3OLRB4K.fonts__font-regular___w47oqm8.type__type-regular___1Ad5n0D > div > div > div.ScrollView__view___2OqtkYJ > div > div.ActionBar__container___KgdHqdA > div'
@@ -83,15 +67,6 @@ const keys = require('./keys/keys.json');
       exchangeData
     };
   });
-
-  //close temporary screen
-  await page.hover(
-    '#container > div > div > div > div.Frame__body___2ejRPw9 > div.Head__container___38SXSDG > div:nth-child(1) > div > div.ScreenControls__selector___VbsxhwF > div > span'
-  );
-
-  await page.click(
-    '#container > div > div > div > div.Frame__body___2ejRPw9 > div.Head__container___38SXSDG > div:nth-child(1) > div > div.ScreenControls__selector___VbsxhwF > ul > li.ScreenControls__active___3if9dSu.ScreenControls__screen___2d-OgfL.fonts__font-regular___w47oqm8.type__type-regular___1Ad5n0D > div.ScreenControls__delete___2ooAh6P.type__type-small___2eSF-cp'
-  );
 
   //remove in production, for debugging only
   await page.waitFor(5000);
