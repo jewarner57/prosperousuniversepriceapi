@@ -1,5 +1,4 @@
 const puppeteer = require('puppeteer');
-const keys = require('./keys/keys.json');
 const server = require('./server.js');
 
 async function getCXPriceData() {
@@ -9,11 +8,13 @@ async function getCXPriceData() {
   let browser = await puppeteer.launch({ headless: false });
   let page = await browser.newPage();
 
+  console.log(process.env.EMAIL);
+
   await page.goto(siteUrl, { timeout: 0, waitUntil: 'networkidle2' });
 
-  await page.type('#login', keys.email, { delay: 100 });
+  await page.type('#login', process.env.email, { delay: 100 });
 
-  await page.type('#password', keys.password, { delay: 100 });
+  await page.type('#password', process.env.password, { delay: 100 });
 
   await page.click('.btn-primary');
 
