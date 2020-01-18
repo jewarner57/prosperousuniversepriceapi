@@ -4,7 +4,7 @@ const express = require('express');
 
 const app = express();
 
-const port = 8000;
+const port = 3000;
 
 let data = scraper.getCXPriceData(startServer);
 
@@ -17,6 +17,10 @@ function startServer() {
 function started() {
   console.log('Server listening on port: ' + port);
 }
+
+app.get('/', function(req, res) {
+  res.send(JSON.stringify({ Hello: ' Price array can be found at /cxdata' }));
+});
 
 app.get('/cxdata', sendCXData);
 
