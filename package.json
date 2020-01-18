@@ -9,6 +9,7 @@
   "author": "Jonathan Warner",
   "license": "ISC",
   "dependencies": {
+    "express": "^4.17.1",
     "puppeteer": "^2.0.0"
   }
 }
