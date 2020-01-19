@@ -5,7 +5,10 @@ async function getCXPriceData() {
   let siteUrl = 'https://apex.prosperousuniverse.com/';
 
   //set headless to false to show scraping in a browser window
-  let browser = await puppeteer.launch({ headless: true });
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox']
+  });
   let page = await browser.newPage();
 
   console.log(process.env.EMAIL);
