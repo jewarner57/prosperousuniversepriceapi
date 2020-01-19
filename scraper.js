@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer');
 const server = require('./server.js');
+require('dotenv').config();
 
 async function getCXPriceData() {
   let siteUrl = 'https://apex.prosperousuniverse.com/';
@@ -10,8 +11,6 @@ async function getCXPriceData() {
     args: ['--no-sandbox', '--disable-setuid-sandbox']
   });
   let page = await browser.newPage();
-
-  console.log(process.env.EMAIL);
 
   await page.goto(siteUrl, { timeout: 0, waitUntil: 'networkidle2' });
 
