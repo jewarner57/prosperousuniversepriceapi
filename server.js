@@ -19,14 +19,18 @@ function started() {
 }
 
 app.get('/', function(req, res) {
-  res.send(JSON.stringify({ Hello: ' Price array can be found at /cxdata' }));
+  res.send(
+    JSON.stringify({
+      Hello: ' Exchange items and values can be found at /cxdata'
+    })
+  );
 });
 
 app.get('/cxdata', sendCXData);
 
 function sendCXData(request, response) {
   response.send(JSON.stringify(data));
-  console.log(data);
+  console.log(JSON.stringify(data));
 }
 
 exports.startServer = startServer;
