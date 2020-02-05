@@ -7,7 +7,7 @@ async function getCXPriceData() {
 
   //set headless to false to show scraping in a browser window
   const browser = await puppeteer.launch({
-    headless: true,
+    headless: false,
     args: ['--no-sandbox', '--disable-setuid-sandbox']
   });
   let page = await browser.newPage();
@@ -53,20 +53,20 @@ async function getCXPriceData() {
     );
 
     let exchangeData = [];
-    for (let i = 0; i < 5; i++) {
+    /*for (let i = 0; i < 5; i++) {
       exchangeData[i] = [];
-    }
+    }*/
 
     let rows = [];
     rows = table.rows;
     let cells = [];
 
-    for (let i = 1; i < rows.length; i++) {
-      cells = rows[i].cells;
-      for (let j = 0; j < 5; j++) {
-        exchangeData[j][i - 1] = table.rows[i].cells[j].innerText;
-      }
+    //for (let i = 1; i < rows.length; i++) {
+    cells = rows[/*i*/ 0].cells;
+    for (let j = 0; j < 5; j++) {
+      exchangeData[j] /*[i - 1]*/ = table.rows[/*i*/ 1].cells[j].innerText;
     }
+    //}
 
     return exchangeData;
   });

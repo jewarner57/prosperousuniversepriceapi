@@ -28,9 +28,9 @@ app.get('/', function(req, res) {
 
 app.get('/cxdata', sendCXData);
 
-function sendCXData(request, response) {
-  response.send(JSON.stringify(data));
-  console.log(JSON.stringify(data));
+async function sendCXData(request, response) {
+  response.json(await data);
+  console.log(scrapedData);
 }
 
 exports.startServer = startServer;
