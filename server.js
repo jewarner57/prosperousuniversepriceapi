@@ -4,6 +4,8 @@ const express = require('express');
 
 const app = express();
 
+const CXData = require('./CXItemInfo.json');
+
 const port = process.env.PORT || 3000;
 
 let data = scraper.getCXPriceData(startServer);
@@ -29,7 +31,7 @@ app.get('/', function(req, res) {
 app.get('/cxdata', sendCXData);
 
 async function sendCXData(request, response) {
-  response.json(await data);
+  response.send(CXData);
 }
 
 exports.startServer = startServer;

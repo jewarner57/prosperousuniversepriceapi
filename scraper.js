@@ -98,15 +98,20 @@ async function getCXPriceData() {
       }
     }
     */
-    return exchangeData.table;
+
+    return JSON.stringify(exchangeData);
   });
 
   debugger;
   await browser.close();
 
-  console.log(data);
-  console.log('Data Scrape Complete Successfully');
-  server.startServer();
+  fs.writeFile('CXItemInfo.json', data, 'utf8', concludeScraping);
+
+  function concludeScraping() {
+    console.log(data);
+    console.log('Data Scrape Complete Successfully');
+    server.startServer();
+  }
   return data;
 }
 
