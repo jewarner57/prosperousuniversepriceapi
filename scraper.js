@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer');
 const server = require('./server.js');
+const fs = require('fs');
 require('dotenv').config();
 
 async function getCXPriceData() {
@@ -20,7 +21,7 @@ async function getCXPriceData() {
 
   await page.click('.btn-primary');
 
-  await page.waitFor(5000);
+  await page.waitFor(10000);
 
   await page.click(
     '#container > div > div > div > div.Frame__body___2ejRPw9 > div.Frame__foot___28jbfLO > div:nth-child(1) > div'
@@ -52,23 +53,52 @@ async function getCXPriceData() {
       '#container > div > div > div > div:nth-child(3) > div > div > div.Window__body___2JyiKBP > div.Tile__tile___38KoLVk > div > div.TileFrame__body___3OLRB4K.fonts__font-regular___w47oqm8.type__type-regular___1Ad5n0D > div > div > div.ScrollView__view___2OqtkYJ > div > div:nth-child(6) > table'
     );
 
+    function grabAndTrimTableValue(table, row, cell) {
+      let tableString = table.rows[row].cells[cell].innerText;
+
+      for (let i = 0; i < tableString.length; i++) {
+        if (tableString.substring(i, i + 1) == '\n') {
+          return tableString.substring(0, i - 1);
+        }
+      }
+      return tableString;
+    }
+
+    let exchangeData = {
+      table: []
+    };
+
+    let rows = table.rows;
+    let cells;
+
+    for (let i = 1; i < rows.length; i++) {
+      let cells = rows[i].length;
+      exchangeData.table.push({
+        abrev: grabAndTrimTableValue(table, i, 0),
+        name: grabAndTrimTableValue(table, i, 1),
+        askPrice: grabAndTrimTableValue(table, i, 3),
+        bidPrice: grabAndTrimTableValue(table, i, 4)
+      });
+    }
+
+    /*
     let exchangeData = [];
-    /*for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 5; i++) {
       exchangeData[i] = [];
-    }*/
+    }
 
     let rows = [];
     rows = table.rows;
     let cells = [];
 
-    //for (let i = 1; i < rows.length; i++) {
-    cells = rows[/*i*/ 0].cells;
-    for (let j = 0; j < 5; j++) {
-      exchangeData[j] /*[i - 1]*/ = table.rows[/*i*/ 1].cells[j].innerText;
+    for (let i = 1; i < rows.length; i++) {
+      cells = rows[i].cells;
+      for (let j = 0; j < 5; j++) {
+        exchangeData[j][i - 1] = table.rows[i].cells[j].innerText;
+      }
     }
-    //}
-
-    return exchangeData;
+    */
+    return exchangeData.table;
   });
 
   debugger;

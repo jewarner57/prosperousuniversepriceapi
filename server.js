@@ -30,7 +30,6 @@ app.get('/cxdata', sendCXData);
 
 async function sendCXData(request, response) {
   response.json(await data);
-  console.log(scrapedData);
 }
 
 exports.startServer = startServer;
