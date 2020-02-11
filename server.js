@@ -8,9 +8,10 @@ const CXData = require('./CXItemInfo.json');
 
 const port = process.env.PORT || 3000;
 
-let data = scraper.getCXPriceData(startServer);
+//let data = scraper.getCXPriceData(startServer);
 
 let server;
+startServer();
 
 function startServer() {
   server = app.listen(port, started);
@@ -28,9 +29,17 @@ app.get('/', function(req, res) {
   );
 });
 
-app.get('/cxdata', sendCXData);
+app.get('/cxdata/:exchange/:item', getItemByAbrev);
 
-async function sendCXData(request, response) {
+function getItemByAbrev(request, response) {
+  response.send(
+    CXData[request.params.exchange][request.params.item.toUpperCase()]
+  );
+}
+
+app.get('/cxdata', sendFullItemList);
+
+function sendFullItemList(request, response) {
   response.send(CXData);
 }
 

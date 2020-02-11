@@ -65,7 +65,7 @@ async function getCXPriceData() {
     }
 
     let exchangeData = {
-      table: []
+      promitor: {}
     };
 
     let rows = table.rows;
@@ -73,31 +73,13 @@ async function getCXPriceData() {
 
     for (let i = 1; i < rows.length; i++) {
       let cells = rows[i].length;
-      exchangeData.table.push({
-        abrev: grabAndTrimTableValue(table, i, 0),
+
+      exchangeData.promitor[grabAndTrimTableValue(table, i, 0)] = {
         name: grabAndTrimTableValue(table, i, 1),
         askPrice: grabAndTrimTableValue(table, i, 3),
         bidPrice: grabAndTrimTableValue(table, i, 4)
-      });
+      };
     }
-
-    /*
-    let exchangeData = [];
-    for (let i = 0; i < 5; i++) {
-      exchangeData[i] = [];
-    }
-
-    let rows = [];
-    rows = table.rows;
-    let cells = [];
-
-    for (let i = 1; i < rows.length; i++) {
-      cells = rows[i].cells;
-      for (let j = 0; j < 5; j++) {
-        exchangeData[j][i - 1] = table.rows[i].cells[j].innerText;
-      }
-    }
-    */
 
     return JSON.stringify(exchangeData);
   });
