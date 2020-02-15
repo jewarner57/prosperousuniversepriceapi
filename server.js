@@ -12,6 +12,13 @@ function loadCXItemDataFromFile() {
   CXData = JSON.parse(rawdata);
 }
 
+function getTimeSinceRefresh() {
+  let dateNow = new Date();
+  let refreshDate = new Date(CXData.refreshDate);
+  //Math.round(n * 10) / 10
+  return Math.round(((dateNow - refreshDate) / 60000) * 10) / 10;
+}
+
 function started() {
   console.log('Server listening on port: ' + port);
   loadCXItemDataFromFile();
@@ -19,9 +26,21 @@ function started() {
 
 app.get('/', function(req, res) {
   res.send(
-    'Route Help: Full Price List /cxdata, Refresh Data /refresh-price-data, View Time of Last Refresh /time-of-last-refresh'
+    'Route Help: Full Price List /cxdata, Refresh Data /refresh-price-data, View Time of Last Refresh /time-since-refresh'
   );
 });
+
+app.get('/cxdata', getFullItemList);
+
+function getFullItemList(request, response) {
+  response.send(CXData);
+}
+
+app.get('/cxdata/:exchange', getFullExchange);
+
+function getFullExchange(request, response) {
+  response.send(CXData[request.params.exchange]);
+}
 
 app.get('/cxdata/:exchange/:item', getItemByAbrev);
 
@@ -31,24 +50,27 @@ function getItemByAbrev(request, response) {
   );
 }
 
-app.get('/cxdata', sendFullItemList);
-
-function sendFullItemList(request, response) {
-  response.send(CXData);
-}
-
 app.get('/refresh-price-data', refreshPriceData);
 
 function refreshPriceData(request, response) {
-  scraper.getCXPriceData();
-  response.send('Update has started.');
+  let timeSinceRefresh = getTimeSinceRefresh();
+
+  if (timeSinceRefresh >= 60) {
+    scraper.getCXPriceData();
+    response.send('Update has started.');
+  } else {
+    response.send(
+      'Server refresh cooldown active. ' +
+        (60 - timeSinceRefresh) +
+        ' minutes remaining until server refresh avaliable'
+    );
+  }
 }
 
-app.get('/time-of-last-refresh', timeOfRefresh);
+app.get('/time-since-refresh', timeSinceRefresh);
 
-function timeOfRefresh(request, response) {
-  response.send(CXData.refreshDate);
-  console.log(CXData.refreshDate);
+function timeSinceRefresh(request, response) {
+  response.send(getTimeSinceRefresh() + ' Minutes Since Last API Refresh');
 }
 
 exports.loadCXItemDataFromFile = loadCXItemDataFromFile;
