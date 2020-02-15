@@ -64,7 +64,10 @@ async function getCXPriceData() {
       return tableString;
     }
 
+    let date = new Date();
+
     let exchangeData = {
+      refreshDate: date,
       promitor: {}
     };
 
@@ -90,11 +93,9 @@ async function getCXPriceData() {
   fs.writeFile('CXItemInfo.json', data, 'utf8', concludeScraping);
 
   function concludeScraping() {
-    console.log(data);
     console.log('Data Scrape Complete Successfully');
-    server.startServer();
+    server.loadCXItemDataFromFile();
   }
-  return data;
 }
 
 exports.getCXPriceData = getCXPriceData;
