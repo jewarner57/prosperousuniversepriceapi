@@ -19,9 +19,7 @@ function started() {
 
 app.get('/', function(req, res) {
   res.send(
-    JSON.stringify({
-      Route_Help: ': Full Price List /cxdata'
-    })
+    'Route Help: Full Price List /cxdata, Refresh Data /refresh-price-data, View Time of Last Refresh /time-of-last-refresh'
   );
 });
 
