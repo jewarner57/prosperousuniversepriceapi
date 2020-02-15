@@ -8,7 +8,7 @@ async function getCXPriceData() {
 
   //set headless to false to show scraping in a browser window
   const browser = await puppeteer.launch({
-    headless: false,
+    headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox']
   });
   let page = await browser.newPage();
