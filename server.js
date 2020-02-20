@@ -2,6 +2,8 @@ const express = require('express');
 const scraper = require('./scraper.js');
 let CXData;
 const fs = require('fs');
+let refreshInProgress = false;
+let refreshCooldown = 0; //set to 60
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -10,12 +12,12 @@ let server = app.listen(port, started);
 function loadCXItemDataFromFile() {
   let rawdata = fs.readFileSync('./CXItemInfo.json');
   CXData = JSON.parse(rawdata);
+  refreshInProgress = false;
 }
 
 function getTimeSinceRefresh() {
   let dateNow = new Date();
   let refreshDate = new Date(CXData.refreshDate);
-  //Math.round(n * 10) / 10
   return Math.round(((dateNow - refreshDate) / 60000) * 10) / 10;
 }
 
@@ -55,14 +57,15 @@ app.get('/refresh-price-data', refreshPriceData);
 function refreshPriceData(request, response) {
   let timeSinceRefresh = getTimeSinceRefresh();
 
-  if (timeSinceRefresh >= 60) {
+  if (timeSinceRefresh > refreshCooldown && refreshInProgress == false) {
     scraper.getCXPriceData();
-    response.send('Update has started.');
+    refreshInProgress = true;
+    response.send('Price data refresh has started. Please wait.');
   } else {
     response.send(
-      'Server refresh cooldown active. ' +
-        (60 - timeSinceRefresh) +
-        ' minutes remaining until server refresh avaliable'
+      'Price data refresh cooldown active. ' +
+        (refreshCooldown - timeSinceRefresh) +
+        ' minutes remaining until data refresh avaliable'
     );
   }
 }
@@ -70,7 +73,18 @@ function refreshPriceData(request, response) {
 app.get('/time-since-refresh', timeSinceRefresh);
 
 function timeSinceRefresh(request, response) {
-  response.send(getTimeSinceRefresh() + ' Minutes Since Last API Refresh');
+  let dataStatus;
+  let timeSinceRefresh = getTimeSinceRefresh();
+
+  if (timeSinceRefresh < refreshCooldown) {
+    dataStatus = 'Price data is recent.';
+  } else {
+    dataStatus = 'Price data is old, refresh recommended.';
+  }
+
+  response.send(
+    timeSinceRefresh + ' Minutes Since Last API Refresh. ' + dataStatus
+  );
 }
 
 exports.loadCXItemDataFromFile = loadCXItemDataFromFile;

@@ -8,10 +8,23 @@ async function getCXPriceData() {
 
   //set headless to false to show scraping in a browser window
   const browser = await puppeteer.launch({
-    headless: true,
+    headless: false,
     args: ['--no-sandbox', '--disable-setuid-sandbox']
   });
+
+  let date = new Date();
+
+  let data = {
+    refreshDate: date,
+    katoa: {},
+    montem: {},
+    promitor: {}
+  };
+
   let page = await browser.newPage();
+
+  //enables console logging inside of page.evaluate
+  page.on('console', consoleObj => console.log(consoleObj.text()));
 
   await page.goto(siteUrl, { timeout: 0, waitUntil: 'networkidle2' });
 
@@ -35,62 +48,108 @@ async function getCXPriceData() {
 
   await page.keyboard.press('Enter');
 
-  await page.click(
-    '#container > div > div > div > div:nth-child(3) > div > div > div.Window__body___2JyiKBP > div.Tile__tile___38KoLVk > div > div.TileFrame__body___3OLRB4K.fonts__font-regular___w47oqm8.type__type-regular___1Ad5n0D > div > div > div.ScrollView__view___2OqtkYJ > div > div.ActionBar__container___KgdHqdA > div'
-  );
+  let loaded = false;
+  let testCount = 0;
 
-  await page.waitFor(100);
-
-  for (let i = 0; i < 7; i++) {
-    await page.keyboard.press('ArrowUp');
-  }
-  await page.keyboard.press('Enter');
-
-  await page.waitFor(4000);
-
-  let data = await page.evaluate(() => {
-    let table = document.querySelector(
-      '#container > div > div > div > div:nth-child(3) > div > div > div.Window__body___2JyiKBP > div.Tile__tile___38KoLVk > div > div.TileFrame__body___3OLRB4K.fonts__font-regular___w47oqm8.type__type-regular___1Ad5n0D > div > div > div.ScrollView__view___2OqtkYJ > div > div:nth-child(6) > table'
+  for (let i = 0; i < 19; i++) {
+    await page.click(
+      '#container > div > div > div > div:nth-child(3) > div > div > div.Window__body___2JyiKBP > div.Tile__tile___38KoLVk > div > div.TileFrame__body___3OLRB4K.fonts__font-regular___w47oqm8.type__type-regular___1Ad5n0D > div > div > div.ScrollView__view___2OqtkYJ > div > div.ActionBar__container___KgdHqdA > div'
     );
 
-    function grabAndTrimTableValue(table, row, cell) {
-      let tableString = table.rows[row].cells[cell].innerText;
+    for (let j = 0; j < 7; j++) {
+      await page.keyboard.press('ArrowUp');
+    }
 
-      for (let i = 0; i < tableString.length; i++) {
-        if (tableString.substring(i, i + 1) == '\n') {
-          return tableString.substring(0, i - 1);
+    for (let j = 0; j < i; j++) {
+      await page.keyboard.press('ArrowDown');
+    }
+
+    await page.waitFor(200);
+
+    await page.keyboard.press('Enter');
+
+    /*loaded = false;
+    testCount = 0;
+    while (loaded == false && testCount < 50000) {
+      let loaded = await page.evaluate(() => {
+        let table = document.querySelector(
+          '#container > div > div > div > div:nth-child(3) > div > div > div.Window__body___2JyiKBP > div.Tile__tile___38KoLVk > div > div.TileFrame__body___3OLRB4K.fonts__font-regular___w47oqm8.type__type-regular___1Ad5n0D > div > div > div.ScrollView__view___2OqtkYJ > div > div:nth-child(6) > table'
+        );
+
+        console.log(table);
+        console.log(table == null);
+
+        if (table == true) {
+          return true;
         }
-      }
-      return tableString;
+        return false;
+      });
+      testCount++;
+      console.log(testCount);
+    }*/
+
+    await page.waitFor(8000);
+
+    data = await addCurrentExchangeCategory('promitor', data, page);
+
+    if (i == 18) {
+      writeDataToFile(data);
     }
+  }
 
-    let date = new Date();
+  async function addCurrentExchangeCategory(exchangeName, exchangeData, page) {
+    let CXData = await page.evaluate(
+      ({ exchangeName, exchangeData }) => {
+        let importedExchangeData = exchangeData;
 
-    let exchangeData = {
-      refreshDate: date,
-      promitor: {}
-    };
+        let table = document.querySelector(
+          '#container > div > div > div > div:nth-child(3) > div > div > div.Window__body___2JyiKBP > div.Tile__tile___38KoLVk > div > div.TileFrame__body___3OLRB4K.fonts__font-regular___w47oqm8.type__type-regular___1Ad5n0D > div > div > div.ScrollView__view___2OqtkYJ > div > div:nth-child(6) > table'
+        );
 
-    let rows = table.rows;
-    let cells;
+        function grabAndTrimTableValue(table, row, cell) {
+          let tableString = table.rows[row].cells[cell].innerText;
 
-    for (let i = 1; i < rows.length; i++) {
-      let cells = rows[i].length;
+          for (let i = 0; i < tableString.length; i++) {
+            if (tableString.substring(i, i + 1) == '\n') {
+              return tableString.substring(0, i);
+            }
+          }
+          return tableString;
+        }
 
-      exchangeData.promitor[grabAndTrimTableValue(table, i, 0)] = {
-        name: grabAndTrimTableValue(table, i, 1),
-        askPrice: grabAndTrimTableValue(table, i, 3),
-        bidPrice: grabAndTrimTableValue(table, i, 4)
-      };
-    }
+        let rows = table.rows;
+        let cells;
 
-    return JSON.stringify(exchangeData);
-  });
+        for (let i = 1; i < rows.length; i++) {
+          let cells = rows[i].length;
+
+          importedExchangeData[exchangeName][
+            grabAndTrimTableValue(table, i, 0)
+          ] = {
+            name: grabAndTrimTableValue(table, i, 1),
+            askPrice: grabAndTrimTableValue(table, i, 3),
+            bidPrice: grabAndTrimTableValue(table, i, 4)
+          };
+        }
+        return importedExchangeData;
+      },
+      { exchangeName, exchangeData }
+    );
+
+    console.log(CXData);
+    return CXData;
+  }
 
   debugger;
-  await browser.close();
 
-  fs.writeFile('CXItemInfo.json', data, 'utf8', concludeScraping);
+  function writeDataToFile(data) {
+    fs.writeFile(
+      'CXItemInfo.json',
+      JSON.stringify(data),
+      'utf8',
+      concludeScraping
+    );
+  }
 
   function concludeScraping() {
     console.log('Data Scrape Complete Successfully');
