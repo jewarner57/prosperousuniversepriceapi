@@ -7,4 +7,4 @@ Route Help: Price List /cxdata, /cxdata/:exchange, /cxdata/:exchange/:itemAbrevi
 Project abandoned due to change of Prosperous Universe terms of service prohibiting bot activity. 
 https://simulogics.net/terms/2020/
 
-5.3 The user is forbidden from using any software that immediately or indirectly affects the game, its functionality (e.g. via so-called “bots”)
+"5.3 The user is forbidden from using any software that immediately or indirectly affects the game, its functionality (e.g. via so-called “bots”)"
